@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🦎🦎🦎🦎</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #counterContainer {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: lime;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: monospace;
+            text-shadow: 0 0 10px lime;
+            z-index: 1000;
+        }
+        #counter {
+            font-size: 24px;
+            display: block;
+        }
+        #spawnRate, #totalSpawned {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-top: 3px;
+        }
+        #lizardBtn {
+            width: 220px;
+            height: 100px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.15s ease;
+        }
+        #lizardBtn:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+        #lizardBtn:active {
+            transform: translateY(4px) scale(0.98);
+        }
+        .lizard-gif {
+            position: absolute;
+            pointer-events: none;
+            animation: fadeOut 25s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        #buttonGif {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="counterContainer">
+        <div id="counter">Lizards: 0</div>
+        <div id="spawnRate">    Lizards/sec: 0.00</div>
+        <div id="totalSpawned">Total Spawned: 0</div>
+    </div>
+    
+    <button id="lizardBtn">
+        <img id="buttonGif" 
+             src="https://raw.githubusercontent.com/Ariannix/Lizard/main/lizard-lizards.gif" 
+             alt="Lizard Button">
+    </button>
+    
+    <audio id="lizardSound" preload="auto">
+        <source src="https://raw.githubusercontent.com/Ariannix/Lizard/main/Lizard_meme.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const btn = document.getElementById('lizardBtn');
+        const buttonGif = document.getElementById('buttonGif');
+        const audio = document.getElementById('lizardSound');
+        const counter = document.getElementById('counter');
+        const spawnRate = document.getElementById('spawnRate');
+        const totalSpawnedEl = document.getElementById('totalSpawned');
+        
+        let lizardCount = 0;
+        let totalSpawns = 0;
+        let startTime = Date.now();
+        let spawnInterval;
+
+        function updateCounter() {
+            counter.textContent = `Lizards: ${lizardCount}`;
+            totalSpawnedEl.textContent = `Total Spawned: ${totalSpawns}`;
+            updateSpawnRate();
+        }
+
+        function updateSpawnRate() {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const rate = elapsed > 0 ? (totalSpawns / elapsed).toFixed(2) : 0;
+            spawnRate.textContent = `Lizards/sec: ${rate}`;
+        }
+
+        // Update spawn rate every second
+        spawnInterval = setInterval(updateSpawnRate, 1000);
+
+        btn.addEventListener('click', () => {
+            // Reset button GIF animation
+            const timestamp = Date.now();
+            buttonGif.src = buttonGif.src.split('?')[0] + '?t=' + timestamp;
+            
+            // Play sound
+            audio.currentTime = 0;
+            audio.play();
+            
+            // Spawn lizard + increment counters
+            totalSpawns++;
+            lizardCount++;
+            spawnLizard();
+            updateCounter();
+        });
+
+        function spawnLizard() {
+            const img = document.createElement('img');
+            img.src = 'https://raw.githubusercontent.com/Ariannix/Lizard/main/lizard3.gif';
+            img.className = 'lizard-gif';
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.left = Math.random() * (window.innerWidth - 120) + 'px';
+            img.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+            document.body.appendChild(img);
+            
+            // Auto-remove after random time and decrement counter
+            const fadeTime = 20000 + Math.random() * 10000; // 20-30s
+            setTimeout(() => {
+                if (img.parentNode) {
+                    img.parentNode.removeChild(img);
+                    lizardCount--;
+                    updateCounter();
+                }
+            }, fadeTime);
+        }
+    </script>
+</body>
+</html>
